@@ -1,0 +1,19 @@
+# Backups of users' original app.asar — local only, never commit
+backups/
+*.asar
+*.asar.*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# npm cache that might leak in during npx runs
+node_modules/
+npm-debug.log*

@@ -1,0 +1,305 @@
+/* ============================================================
+   NEON DUSK v2 — elegant retro-synthwave for Claude desktop
+   Strategy: override Claude's HSL-triplet design tokens on :root
+   so colors cascade through its Tailwind-based UI naturally, then
+   apply targeted fixes where we want extra flavor.
+   ============================================================ */
+
+:root {
+  /* --- Our palette (private, prefixed so we never collide) --- */
+  --nd-void:      #14101e;   /* deepest canvas */
+  --nd-panel:     #1c1830;   /* raised surfaces (sidebar, cards) */
+  --nd-inset:     #251f3b;   /* inputs, code blocks */
+  --nd-hover:     #2d2646;   /* button/row hover */
+
+  --nd-ink:       #ece7f5;
+  --nd-ink-dim:   #a096c2;
+  --nd-ink-faint: #6b5f8a;
+
+  --nd-magenta:   #ff4dd2;
+  --nd-violet:    #b47dff;
+  --nd-cyan:      #4df0ff;
+  --nd-lime:      #b8ff4d;
+  --nd-amber:     #ffc266;
+
+  --nd-border:     rgba(180, 125, 255, 0.14);
+  --nd-border-med: rgba(180, 125, 255, 0.28);
+  --nd-border-hot: rgba(255, 77, 210, 0.45);
+
+  --nd-glow-subtle: 0 0 8px rgba(180, 125, 255, 0.18);
+  --nd-glow-hot:    0 0 10px rgba(255, 77, 210, 0.3);
+
+  /* ------------------------------------------------------------
+     Override Claude's design tokens. These follow the Anthropic
+     Tailwind convention: HSL triplets (no "hsl(...)" wrapper) so
+     they can be composed with alpha via `hsl(var(--x) / 0.5)`.
+     Redefining them cascades through every component.
+     ------------------------------------------------------------ */
+
+  /* Backgrounds — stepped from void (0) to highest elevation */
+  --bg-000: 258 28% 8%;      /* page canvas */
+  --bg-100: 258 24% 11%;     /* sidebar, cards */
+  --bg-200: 258 22% 15%;     /* inputs, hover rows */
+  --bg-300: 258 20% 19%;     /* pressed / elevated */
+  --bg-400: 258 18% 24%;
+  --bg-500: 258 16% 30%;
+
+  /* Text */
+  --text-000: 260 35% 95%;   /* high emphasis */
+  --text-100: 260 28% 88%;
+  --text-200: 260 22% 75%;   /* body default */
+  --text-300: 260 18% 62%;   /* secondary */
+  --text-400: 260 16% 50%;   /* tertiary/disabled */
+  --text-500: 260 14% 40%;
+
+  /* Accent (brand / primary actions) */
+  --accent-100: 310 100% 66%;   /* magenta */
+  --accent-200: 272 100% 74%;   /* violet */
+  --accent-300: 272 100% 82%;
+  --accent-main-000: 310 100% 66%;
+  --accent-main-100: 310 100% 66%;
+  --accent-main-200: 272 100% 74%;
+  --accent-pro-000: 272 100% 74%;
+  --accent-pro-100: 272 100% 74%;
+  --accent-pro-200: 310 100% 66%;
+  --accent-secondary-100: 185 100% 65%;  /* cyan */
+
+  /* Semantic */
+  --success-100: 90 90% 62%;    /* lime */
+  --warning-100: 36 100% 65%;
+  --danger-000:  352 85% 62%;
+  --danger-100:  352 85% 62%;
+  --danger-200:  352 85% 62%;
+
+  /* Borders */
+  --border-100: 260 30% 22%;
+  --border-200: 260 30% 30%;
+  --border-300: 260 30% 42%;
+
+  /* Contrast surfaces */
+  --oncolor-100: 258 28% 8%;    /* dark text on accent buttons */
+  --oncolor-200: 258 28% 10%;
+
+  /* Tailwind ring color — used for focus rings */
+  --tw-ring-color: hsl(var(--accent-100) / 0.5);
+}
+
+/* ------------------------------------------------------------
+   Explicit canvas anchors — highest specificity wins against
+   any container trying to set a bright background.
+   ------------------------------------------------------------ */
+html, body, #root, #app, main {
+  background-color: var(--nd-void) !important;
+  color: var(--nd-ink);
+}
+
+/* Body typography — retro monospace flavor on layout containers,
+   but don't force it on message content (Claude uses its own
+   font-stack which works better for long-form reading). */
+body {
+  font-family: "JetBrains Mono", "IBM Plex Mono", "SF Mono", Menlo, monospace;
+  letter-spacing: 0.003em;
+}
+
+/* ---------------------------------------------------------------
+   Sidebars & panels — dark, clearly delineated
+   --------------------------------------------------------------- */
+aside,
+nav[class*="sidebar" i],
+[class*="Sidebar"],
+[class*="side-panel" i],
+[class*="left-panel" i] {
+  background-color: var(--nd-panel) !important;
+  border-color: var(--nd-border) !important;
+}
+
+/* ---------------------------------------------------------------
+   Cards, tiles, dialogs — raised surfaces
+   --------------------------------------------------------------- */
+[class*="card" i],
+[class*="Card"],
+[class*="tile" i],
+[class*="dialog" i],
+[class*="modal" i],
+[class*="popover" i],
+[class*="menu" i][role="menu"],
+[role="dialog"],
+[role="menu"] {
+  background-color: var(--nd-panel);
+  border: 1px solid var(--nd-border);
+  color: var(--nd-ink);
+}
+
+/* ---------------------------------------------------------------
+   Inputs & composer
+   --------------------------------------------------------------- */
+input, textarea, [contenteditable="true"] {
+  background-color: var(--nd-inset);
+  color: var(--nd-ink);
+  border: 1px solid var(--nd-border);
+  caret-color: var(--nd-magenta);
+}
+
+[class*="composer" i],
+[class*="Composer"],
+[class*="prompt-input" i] {
+  background-color: var(--nd-inset);
+  border: 1px solid var(--nd-border);
+}
+
+input:focus, textarea:focus, [contenteditable="true"]:focus,
+[class*="composer" i]:focus-within,
+[class*="Composer"]:focus-within {
+  border-color: var(--nd-border-hot);
+  box-shadow: var(--nd-glow-hot);
+  outline: none;
+}
+
+/* ---------------------------------------------------------------
+   Buttons — restrained, no loud gradients
+   Default: transparent, subtle border, cyan text on hover
+   Primary (submit/send/primary): solid magenta, clearly the CTA
+   --------------------------------------------------------------- */
+
+/* Strictly scoped primary/send rules — must be an actual button */
+button[type="submit"],
+button[class*="primary" i],
+button[class*="send" i],
+button[data-variant*="primary" i],
+[role="button"][class*="primary" i][class*="button" i],
+[role="button"][class*="send" i][class*="button" i] {
+  background-color: var(--nd-magenta) !important;
+  background-image: none !important;
+  color: var(--nd-void) !important;
+  border: 1px solid transparent !important;
+  font-weight: 600;
+  transition: background-color 140ms ease, box-shadow 140ms ease, transform 80ms ease;
+}
+
+button[type="submit"]:hover,
+button[class*="primary" i]:hover,
+button[class*="send" i]:hover {
+  background-color: var(--nd-violet) !important;
+  box-shadow: var(--nd-glow-hot) !important;
+  transform: translateY(-1px);
+}
+
+button[type="submit"]:active,
+button[class*="primary" i]:active,
+button[class*="send" i]:active {
+  transform: translateY(0);
+}
+
+/* ---------------------------------------------------------------
+   Links
+   --------------------------------------------------------------- */
+a:not([class*="button" i]):not([role="button"]) {
+  color: var(--nd-cyan);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(77, 240, 255, 0.25);
+  transition: border-color 120ms ease, text-shadow 120ms ease;
+}
+a:not([class*="button" i]):not([role="button"]):hover {
+  border-bottom-color: var(--nd-cyan);
+  text-shadow: 0 0 6px rgba(77, 240, 255, 0.4);
+}
+
+/* ---------------------------------------------------------------
+   Code
+   --------------------------------------------------------------- */
+code, kbd, samp {
+  background-color: var(--nd-inset);
+  color: var(--nd-amber);
+  border: 1px solid var(--nd-border);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+  font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
+  font-size: 0.92em;
+}
+
+pre {
+  background-color: var(--nd-inset);
+  border: 1px solid var(--nd-border);
+  border-radius: 6px;
+  box-shadow: inset 0 0 16px rgba(0,0,0,0.35), var(--nd-glow-subtle);
+}
+pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+}
+
+/* ---------------------------------------------------------------
+   Message bubbles — only real message containers, data-attr based
+   --------------------------------------------------------------- */
+[data-message-author-role="user"] {
+  border-left: 2px solid var(--nd-lime);
+  padding-left: 0.75rem;
+}
+[data-message-author-role="assistant"] {
+  border-left: 2px solid var(--nd-violet);
+  padding-left: 0.75rem;
+}
+
+/* ---------------------------------------------------------------
+   Scrollbars — thin, violet, glow on hover
+   --------------------------------------------------------------- */
+::-webkit-scrollbar { width: 9px; height: 9px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--nd-border-med);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--nd-violet);
+  background-clip: padding-box;
+  box-shadow: var(--nd-glow-subtle);
+}
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* ---------------------------------------------------------------
+   Selection
+   --------------------------------------------------------------- */
+::selection {
+  background-color: var(--nd-magenta);
+  color: var(--nd-void);
+  text-shadow: none;
+}
+
+/* ---------------------------------------------------------------
+   Focus rings — subtle magenta halo
+   --------------------------------------------------------------- */
+*:focus-visible {
+  outline: 1px solid var(--nd-magenta);
+  outline-offset: 2px;
+}
+
+/* ---------------------------------------------------------------
+   Dividers
+   --------------------------------------------------------------- */
+hr, [role="separator"] {
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--nd-border-med), transparent);
+  margin: 0.5rem 0;
+}
+
+/* ---------------------------------------------------------------
+   Tooltips
+   --------------------------------------------------------------- */
+[role="tooltip"] {
+  background-color: var(--nd-panel) !important;
+  color: var(--nd-ink) !important;
+  border: 1px solid var(--nd-border-med) !important;
+  box-shadow: var(--nd-glow-subtle) !important;
+}
+
+/* ---------------------------------------------------------------
+   Small touches — headings get a quiet violet tint
+   --------------------------------------------------------------- */
+h1, h2, h3 {
+  color: var(--nd-ink);
+  letter-spacing: 0.015em;
+}
