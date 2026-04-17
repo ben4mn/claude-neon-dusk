@@ -297,6 +297,112 @@ hr, [role="separator"] {
 }
 
 /* ---------------------------------------------------------------
+   Title bar / window header — blend with canvas, no harsh seam.
+   The top of the app tends to have a slightly different tone than
+   the content below; here we force them to match and replace any
+   hard border with a barely-visible glow.
+   --------------------------------------------------------------- */
+[class*="titleBar" i],
+[class*="title-bar" i],
+[class*="titlebar" i],
+[class*="TitleBar"],
+[class*="window-header" i],
+[class*="app-header" i],
+[class*="topBar" i],
+[class*="top-bar" i],
+header[class*="app" i],
+[class*="breadcrumb" i],
+[class*="Breadcrumb"],
+[class*="tab-bar" i],
+[class*="TabBar"] {
+  background-color: var(--nd-void) !important;
+  border-bottom: none !important;
+  box-shadow: 0 1px 0 0 rgba(180, 125, 255, 0.06) !important;
+}
+
+/* Soften any "titlebar region" drag handles */
+[style*="-webkit-app-region: drag"],
+[class*="drag-region" i] {
+  background-color: var(--nd-void) !important;
+}
+
+/* ---------------------------------------------------------------
+   Menu items — softer hover and selection states.
+   Default menu selection is a flat gray block; we replace it with
+   a subtle violet tint so it blends with the panel background.
+   --------------------------------------------------------------- */
+[role="menu"],
+[role="listbox"],
+[class*="menu" i][role="menu"],
+[class*="Menu"][role="menu"] {
+  background-color: var(--nd-panel) !important;
+  border: 1px solid var(--nd-border) !important;
+  box-shadow: 0 8px 32px -12px rgba(0, 0, 0, 0.6),
+              0 0 0 1px rgba(180, 125, 255, 0.05) !important;
+}
+
+[role="menuitem"],
+[role="menuitemcheckbox"],
+[role="menuitemradio"],
+[role="option"] {
+  background-color: transparent !important;
+  color: var(--nd-ink) !important;
+  border-radius: 5px;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+/* Hover / keyboard-highlighted state */
+[role="menuitem"]:hover,
+[role="menuitemcheckbox"]:hover,
+[role="menuitemradio"]:hover,
+[role="option"]:hover,
+[role="menuitem"][data-highlighted],
+[role="menuitemcheckbox"][data-highlighted],
+[role="menuitemradio"][data-highlighted],
+[role="option"][data-highlighted],
+[role="menuitem"][data-highlighted="true"],
+[role="option"][data-highlighted="true"] {
+  background-color: rgba(180, 125, 255, 0.09) !important;
+  color: var(--nd-ink) !important;
+}
+
+/* Selected / checked — subtle accent tint with a thin left rail */
+[role="menuitem"][aria-checked="true"],
+[role="menuitemcheckbox"][aria-checked="true"],
+[role="menuitemradio"][aria-checked="true"],
+[role="option"][aria-selected="true"],
+[role="menuitem"][data-state="checked"],
+[role="menuitemcheckbox"][data-state="checked"],
+[role="menuitemradio"][data-state="checked"],
+[role="option"][data-state="checked"] {
+  background-color: rgba(180, 125, 255, 0.12) !important;
+  color: var(--nd-ink) !important;
+  box-shadow: inset 2px 0 0 0 var(--nd-violet) !important;
+}
+
+/* The checkmark itself — tint it magenta so it pops without being loud */
+[role="menuitem"][aria-checked="true"] svg,
+[role="menuitemcheckbox"][aria-checked="true"] svg,
+[role="menuitemradio"][aria-checked="true"] svg,
+[role="option"][aria-selected="true"] svg,
+[role="menuitem"][data-state="checked"] svg {
+  color: var(--nd-magenta) !important;
+}
+
+/* Keyboard shortcut hints in menus (the "2", "⌘E" style chips) */
+[class*="shortcut" i],
+[class*="Shortcut"],
+kbd {
+  background-color: rgba(180, 125, 255, 0.08) !important;
+  color: var(--nd-amber) !important;
+  border: 1px solid var(--nd-border) !important;
+  border-radius: 3px;
+  padding: 0 4px;
+  font-family: "JetBrains Mono", "SF Mono", Menlo, monospace;
+  font-size: 0.85em;
+}
+
+/* ---------------------------------------------------------------
    Small touches — headings get a quiet violet tint
    --------------------------------------------------------------- */
 h1, h2, h3 {
