@@ -277,13 +277,115 @@ pre code {
 }
 
 /* ---------------------------------------------------------------
-   Dividers
+   Dividers — always a soft gradient fade, never a hard line
    --------------------------------------------------------------- */
-hr, [role="separator"] {
-  border: none;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--nd-border-med), transparent);
+hr, [role="separator"],
+[class*="divider" i],
+[class*="Divider"],
+[class*="separator" i],
+[class*="Separator"] {
+  border: none !important;
+  height: 1px !important;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(180, 125, 255, 0.18) 25%,
+    rgba(180, 125, 255, 0.18) 75%,
+    transparent 100%) !important;
   margin: 0.5rem 0;
+}
+
+/* Soften any remaining hard borders between container sections */
+[class*="border-t" i]:not(button):not([role="button"]),
+[class*="border-b" i]:not(button):not([role="button"]),
+[class*="divide-y" i] > * + * {
+  border-color: var(--nd-border) !important;
+}
+
+/* ---------------------------------------------------------------
+   Segmented controls / tab lists / mode selectors
+   (plan mode, permission mode, effort, etc.)
+   --------------------------------------------------------------- */
+[role="tablist"],
+[role="radiogroup"],
+[class*="segmented" i],
+[class*="Segmented"],
+[class*="tabs" i][role="tablist"],
+[class*="mode-selector" i],
+[class*="toggle-group" i],
+[class*="ToggleGroup"] {
+  background-color: var(--nd-inset) !important;
+  border: 1px solid var(--nd-border) !important;
+  border-radius: 6px;
+  padding: 2px;
+}
+
+/* Individual segment / tab / radio option */
+[role="tab"],
+[role="radio"],
+[class*="segmented" i] > button,
+[class*="Segmented"] > button,
+[class*="toggle-group" i] > button,
+[class*="ToggleGroup"] > button,
+[class*="tabs" i] > button,
+[class*="tab-trigger" i] {
+  background-color: transparent !important;
+  background-image: none !important;
+  color: var(--nd-ink-dim) !important;
+  border: 1px solid transparent !important;
+  border-radius: 4px !important;
+  transition: background-color 140ms ease, color 140ms ease;
+}
+
+[role="tab"]:hover,
+[role="radio"]:hover,
+[class*="segmented" i] > button:hover,
+[class*="toggle-group" i] > button:hover {
+  background-color: rgba(180, 125, 255, 0.08) !important;
+  color: var(--nd-ink) !important;
+}
+
+/* Selected state for tabs / radios / segments */
+[role="tab"][aria-selected="true"],
+[role="tab"][data-state="active"],
+[role="radio"][aria-checked="true"],
+[role="radio"][data-state="checked"],
+[class*="segmented" i] > button[aria-pressed="true"],
+[class*="segmented" i] > button[data-state="active"],
+[class*="segmented" i] > button[data-state="on"],
+[class*="toggle-group" i] > button[data-state="on"],
+[class*="ToggleGroup"] > button[data-state="on"],
+[class*="toggle-group" i] > button[aria-pressed="true"],
+button[aria-pressed="true"] {
+  background-color: rgba(180, 125, 255, 0.15) !important;
+  color: var(--nd-ink) !important;
+  box-shadow: inset 0 0 0 1px rgba(180, 125, 255, 0.25),
+              0 0 8px rgba(180, 125, 255, 0.12) !important;
+}
+
+/* Plan-mode-looking pills specifically (permission mode, etc.) —
+   often rendered as <button> with a 'plan' / 'accept' / 'bypass'
+   data attribute or class. Cast a wide net. */
+button[class*="plan" i],
+button[class*="accept" i],
+button[class*="bypass" i],
+button[data-mode],
+[role="button"][data-mode],
+[class*="permission-mode" i] button,
+[class*="mode-pill" i] {
+  background-color: var(--nd-inset) !important;
+  color: var(--nd-ink-dim) !important;
+  border: 1px solid var(--nd-border) !important;
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+
+button[class*="plan" i][aria-pressed="true"],
+button[data-mode][aria-pressed="true"],
+[class*="mode-pill" i][data-active="true"],
+[class*="mode-pill" i][aria-selected="true"] {
+  background-color: rgba(180, 125, 255, 0.18) !important;
+  color: var(--nd-violet) !important;
+  border-color: var(--nd-border-med) !important;
 }
 
 /* ---------------------------------------------------------------
