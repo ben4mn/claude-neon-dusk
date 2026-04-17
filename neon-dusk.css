@@ -516,6 +516,58 @@ button[data-mode][aria-pressed="true"],
 }
 
 /* ---------------------------------------------------------------
+   Scroll-edge shadows & fades — neutralize.
+   Apps use a dark gradient/shadow at the top and bottom of scroll
+   regions as a "more content here" cue. On a dark theme it just
+   looks like a black band. Wipe it. We're careful to only hit
+   things that clearly look like scroll-edge artifacts, not
+   legitimate shadows on cards/menus/tooltips.
+   --------------------------------------------------------------- */
+[class*="scroll-shadow" i],
+[class*="scroll-fade" i],
+[class*="scroll-mask" i],
+[class*="scroll-gradient" i],
+[class*="fade-top" i],
+[class*="fade-bottom" i],
+[class*="edge-fade" i],
+[class*="edge-shadow" i],
+[class*="overflow-shadow" i],
+[class*="overflow-fade" i],
+[class*="shadow-top" i],
+[class*="shadow-bottom" i],
+[class*="top-shadow" i],
+[class*="bottom-shadow" i],
+[class*="gradient-top" i],
+[class*="gradient-bottom" i] {
+  box-shadow: none !important;
+  background: transparent !important;
+  background-image: none !important;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  opacity: 0 !important;
+}
+
+/* Sticky headers often cast a downward box-shadow onto the content
+   below them — that's where the "dark band at the top of the pane"
+   comes from. Strip it. Our title-bar rule above provides a much
+   subtler violet hairline instead. */
+[class*="sticky" i]:not([class*="sidebar" i]),
+[class*="Sticky"]:not([class*="sidebar" i]),
+[style*="position: sticky"],
+[style*="position:sticky"] {
+  box-shadow: none !important;
+}
+
+/* Overflow-capable containers sometimes carry an inset shadow for
+   the same purpose — neutralize inset shadows on scroll regions. */
+[class*="scroll-container" i],
+[class*="scroll-area" i],
+[class*="ScrollArea"],
+[data-radix-scroll-area-viewport] {
+  box-shadow: none !important;
+}
+
+/* ---------------------------------------------------------------
    Tooltips
    --------------------------------------------------------------- */
 [role="tooltip"] {
