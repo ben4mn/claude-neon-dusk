@@ -241,6 +241,83 @@ pre code {
   padding-left: 0.75rem;
 }
 
+/* User-message text — force ink color so it doesn't render blue-on-blue.
+   Claude defaults to a bright blue for user turn text, which clashes
+   with our violet-tinted bubble. Swap it for our off-white ink. */
+[data-message-author-role="user"],
+[data-message-author-role="user"] p,
+[data-message-author-role="user"] span:not([class*="icon" i]):not([class*="Icon"]),
+[data-message-author-role="user"] div:not([class*="icon" i]):not([class*="Icon"]) {
+  color: var(--nd-ink) !important;
+}
+
+/* Same treatment for any "own message" / "sent" / "outgoing" variants */
+[class*="own-message" i],
+[class*="OwnMessage"],
+[class*="sent-message" i],
+[class*="outgoing" i],
+[class*="user-turn" i],
+[class*="UserTurn"] {
+  color: var(--nd-ink) !important;
+}
+[class*="own-message" i] *,
+[class*="user-turn" i] p,
+[class*="user-turn" i] span:not([class*="icon" i]) {
+  color: var(--nd-ink) !important;
+}
+
+/* ---------------------------------------------------------------
+   Composer attachments (pasted images, file uploads)
+   Smooth the expansion, theme the thumbnail
+   --------------------------------------------------------------- */
+[class*="composer" i],
+[class*="Composer"],
+[class*="prompt-input" i] {
+  transition: min-height 180ms ease, height 180ms ease,
+              border-color 140ms ease, box-shadow 140ms ease;
+}
+
+[class*="composer" i] img,
+[class*="Composer"] img,
+[class*="attachment" i] img,
+[class*="Attachment"] img,
+[class*="file-preview" i] img,
+[class*="image-preview" i] img,
+[class*="thumbnail" i] img {
+  border-radius: 6px;
+  border: 1px solid var(--nd-border);
+  box-shadow: var(--nd-glow-subtle);
+}
+
+/* Attachment chip container (the little tile that holds the image) */
+[class*="attachment" i]:not(img),
+[class*="Attachment"]:not(img),
+[class*="file-chip" i],
+[class*="FileChip"],
+[class*="upload-item" i] {
+  background-color: var(--nd-inset) !important;
+  border: 1px solid var(--nd-border) !important;
+  border-radius: 6px;
+  transition: border-color 140ms ease;
+}
+
+[class*="attachment" i]:not(img):hover,
+[class*="file-chip" i]:hover,
+[class*="upload-item" i]:hover {
+  border-color: var(--nd-border-med) !important;
+}
+
+/* Remove button ("X") on attachment chips */
+[class*="attachment" i] [aria-label*="remove" i],
+[class*="attachment" i] [aria-label*="delete" i],
+[class*="file-chip" i] button {
+  color: var(--nd-ink-dim) !important;
+}
+[class*="attachment" i] [aria-label*="remove" i]:hover,
+[class*="file-chip" i] button:hover {
+  color: var(--nd-magenta) !important;
+}
+
 /* ---------------------------------------------------------------
    Scrollbars — thin, violet, glow on hover
    --------------------------------------------------------------- */
@@ -299,36 +376,48 @@ hr,
   margin: 0.5rem 0;
 }
 
-/* Explicit protection for panel resize handles — never apply our
-   divider/border styling to these. Covers react-resizable-panels
-   and common naming conventions. */
+/* Explicit protection for panel resize handles.
+   CRITICAL: never set width/height/margin on these — resize-panel
+   libraries (react-resizable-panels, split.js, react-split-pane)
+   set those explicitly in pixels and overriding them collapses the
+   drag target. We only neutralize colors / shadows that might
+   leak from other rules. */
 [role="separator"][aria-orientation="vertical"],
 [data-panel-resize-handle-id],
 [data-panel-resize-handle-enabled],
+[data-resize-handle],
+[data-resize-handle-active],
 [class*="resize-handle" i],
 [class*="ResizeHandle"],
 [class*="resizer" i],
 [class*="Resizer"],
-[class*="PanelResize" i] {
-  background: transparent !important;
+[class*="PanelResize" i],
+[class*="SplitPane" i] > [class*="resizer" i],
+[class*="split-pane" i] [class*="gutter" i],
+[class*="gutter" i][class*="horizontal" i],
+[class*="gutter-horizontal" i],
+[class*="drag-handle" i],
+[class*="DragHandle"] {
+  background-color: transparent !important;
   background-image: none !important;
-  height: auto !important;
-  width: auto !important;
-  margin: 0 !important;
-  border: none !important;
+  border-color: transparent !important;
   box-shadow: none !important;
+  /* NO width/height/margin/padding overrides — preserve library sizing */
 }
 
 /* Visual flourish on hover so you can see the grab zone,
-   without changing its hit area */
+   without changing its hit geometry */
 [role="separator"][aria-orientation="vertical"]:hover,
 [data-panel-resize-handle-id]:hover,
+[data-resize-handle]:hover,
 [class*="resize-handle" i]:hover,
 [class*="ResizeHandle"]:hover,
-[class*="resizer" i]:hover {
-  background: linear-gradient(180deg,
+[class*="resizer" i]:hover,
+[class*="gutter" i][class*="horizontal" i]:hover,
+[class*="drag-handle" i]:hover {
+  background-image: linear-gradient(180deg,
     transparent 0%,
-    rgba(180, 125, 255, 0.25) 50%,
+    rgba(180, 125, 255, 0.28) 50%,
     transparent 100%) !important;
 }
 
