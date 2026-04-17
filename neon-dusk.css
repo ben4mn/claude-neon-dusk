@@ -277,13 +277,18 @@ pre code {
 }
 
 /* ---------------------------------------------------------------
-   Dividers — always a soft gradient fade, never a hard line
+   Dividers — soft gradient fade.
+   IMPORTANT: only horizontal dividers. Vertical [role="separator"]
+   elements are used by react-resizable-panels as drag handles —
+   styling them as a 1px strip breaks panel resizing. We skip any
+   element whose class hints "resize" or "handle" as well.
    --------------------------------------------------------------- */
-hr, [role="separator"],
-[class*="divider" i],
-[class*="Divider"],
-[class*="separator" i],
-[class*="Separator"] {
+hr,
+[role="separator"][aria-orientation="horizontal"],
+[class*="divider" i]:not([class*="resize" i]):not([class*="handle" i]):not([role="separator"]),
+[class*="Divider"]:not([class*="resize" i]):not([class*="handle" i]):not([role="separator"]),
+[class*="separator" i]:not([class*="resize" i]):not([class*="handle" i]):not([role="separator"]),
+[class*="Separator"]:not([class*="resize" i]):not([class*="handle" i]):not([role="separator"]) {
   border: none !important;
   height: 1px !important;
   background: linear-gradient(90deg,
@@ -292,6 +297,39 @@ hr, [role="separator"],
     rgba(180, 125, 255, 0.18) 75%,
     transparent 100%) !important;
   margin: 0.5rem 0;
+}
+
+/* Explicit protection for panel resize handles — never apply our
+   divider/border styling to these. Covers react-resizable-panels
+   and common naming conventions. */
+[role="separator"][aria-orientation="vertical"],
+[data-panel-resize-handle-id],
+[data-panel-resize-handle-enabled],
+[class*="resize-handle" i],
+[class*="ResizeHandle"],
+[class*="resizer" i],
+[class*="Resizer"],
+[class*="PanelResize" i] {
+  background: transparent !important;
+  background-image: none !important;
+  height: auto !important;
+  width: auto !important;
+  margin: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Visual flourish on hover so you can see the grab zone,
+   without changing its hit area */
+[role="separator"][aria-orientation="vertical"]:hover,
+[data-panel-resize-handle-id]:hover,
+[class*="resize-handle" i]:hover,
+[class*="ResizeHandle"]:hover,
+[class*="resizer" i]:hover {
+  background: linear-gradient(180deg,
+    transparent 0%,
+    rgba(180, 125, 255, 0.25) 50%,
+    transparent 100%) !important;
 }
 
 /* Soften any remaining hard borders between container sections */
