@@ -62,7 +62,7 @@
   --accent-pro-000: 272 100% 74%;
   --accent-pro-100: 272 100% 74%;
   --accent-pro-200: 310 100% 66%;
-  --accent-secondary-100: 185 100% 65%;  /* cyan */
+  --accent-secondary-100: 272 100% 74%;  /* violet (was cyan — caused blue input text) */
 
   /* Semantic */
   --success-100: 90 90% 62%;    /* lime */
@@ -145,6 +145,43 @@ input, textarea, [contenteditable="true"] {
 [class*="prompt-input" i] {
   background-color: var(--nd-inset);
   border: 1px solid var(--nd-border);
+}
+
+/* Force ink color for composer / input text — overrides any blue/cyan
+   accent that would otherwise make typed text render blue-on-dark.
+   Covers Claude Code buddy composer, main chat composer, and any
+   contenteditable region. */
+input, textarea, [contenteditable="true"], [role="textbox"] {
+  color: var(--nd-ink) !important;
+}
+[class*="composer" i] textarea,
+[class*="Composer"] textarea,
+[class*="composer" i] input,
+[class*="Composer"] input,
+[class*="composer" i] [contenteditable="true"],
+[class*="Composer"] [contenteditable="true"],
+[class*="composer" i] [role="textbox"],
+[class*="Composer"] [role="textbox"],
+[class*="prompt-input" i] *,
+[class*="ProseMirror"],
+[class*="ProseMirror"] * {
+  color: var(--nd-ink) !important;
+}
+
+/* Override any Tailwind text-accent-secondary / text-blue utility
+   classes when applied to composer text content */
+[class*="composer" i] [class*="text-accent"],
+[class*="Composer"] [class*="text-accent"],
+[class*="composer" i] [class*="text-blue"],
+[class*="Composer"] [class*="text-blue"] {
+  color: var(--nd-ink) !important;
+}
+
+/* Placeholder — dim but readable */
+input::placeholder, textarea::placeholder,
+[contenteditable="true"]:empty::before {
+  color: var(--nd-ink-faint) !important;
+  opacity: 1;
 }
 
 input:focus, textarea:focus, [contenteditable="true"]:focus,
@@ -567,27 +604,60 @@ button[data-mode][aria-pressed="true"],
   box-shadow: none !important;
 }
 
-/* THE REAL BLACK BAND: Claude uses `has-top-scroll` / `has-bottom-scroll`
-   toggle classes that apply a `mask-image` gradient fading content to
-   transparent at the edge. The dark parent bg then shows through,
-   producing the "black-to-grey" band. Nuke the mask so content ends
-   cleanly at the edge — no band, no fade. */
+/* THE REAL BLACK BAND — multi-source. Claude does scroll-edge
+   indication via several mechanisms; we must kill all of them:
+     1. `has-top-scroll` / `has-bottom-scroll` toggle classes with
+        mask-image gradients that fade content to transparent
+     2. `top-shadow` / `bottom-shadow` classes with box-shadow or
+        background-image gradients
+     3. `after:bg-[radial-gradient(...)]` Tailwind arbitrary pseudo-
+        element overlays that draw a dark tint at edge
+     4. `scroll-fade` classes
+*/
+
+/* Scroll-toggle classes */
 .has-top-scroll,
 .has-bottom-scroll,
+.top-shadow,
+.bottom-shadow,
+.scroll-fade,
+[class~="has-top-scroll"],
+[class~="has-bottom-scroll"],
+[class~="top-shadow"],
+[class~="bottom-shadow"],
+[class~="scroll-fade"],
 [class*="has-top-scroll"],
 [class*="has-bottom-scroll"],
-[class*="has-scroll"] {
+[class*="top-shadow"],
+[class*="bottom-shadow"],
+[class*="scroll-fade"] {
   -webkit-mask-image: none !important;
   mask-image: none !important;
   -webkit-mask: none !important;
   mask: none !important;
+  box-shadow: none !important;
+  background-image: none !important;
 }
 
-/* Same family — Tailwind arbitrary-value mask-image utilities */
-[class*="mask-image"][class*="linear-gradient"],
-[class*="mask-image:linear-gradient"] {
+/* Tailwind arbitrary mask-image utilities */
+[class*="mask-image:linear-gradient"],
+[class*="mask-image\\:linear-gradient"] {
   -webkit-mask-image: none !important;
   mask-image: none !important;
+}
+
+/* Pseudo-element overlays via Tailwind `after:bg-[radial-gradient(...)]`
+   and `before:bg-[linear-gradient(...)]` — these draw a dark tint over
+   the bottom/top of the scroll area. Kill them. */
+[class*="after:bg-[radial-gradient"]::after,
+[class*="after:bg-[linear-gradient"]::after,
+[class*="before:bg-[radial-gradient"]::before,
+[class*="before:bg-[linear-gradient"]::before,
+[class*="after\\:bg-\\[radial-gradient"]::after,
+[class*="before\\:bg-\\[radial-gradient"]::before {
+  background-image: none !important;
+  background: transparent !important;
+  display: none !important;
 }
 
 /* ---------------------------------------------------------------
