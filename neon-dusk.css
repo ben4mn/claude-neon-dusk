@@ -567,6 +567,29 @@ button[data-mode][aria-pressed="true"],
   box-shadow: none !important;
 }
 
+/* THE REAL BLACK BAND: Claude uses `has-top-scroll` / `has-bottom-scroll`
+   toggle classes that apply a `mask-image` gradient fading content to
+   transparent at the edge. The dark parent bg then shows through,
+   producing the "black-to-grey" band. Nuke the mask so content ends
+   cleanly at the edge — no band, no fade. */
+.has-top-scroll,
+.has-bottom-scroll,
+[class*="has-top-scroll"],
+[class*="has-bottom-scroll"],
+[class*="has-scroll"] {
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  -webkit-mask: none !important;
+  mask: none !important;
+}
+
+/* Same family — Tailwind arbitrary-value mask-image utilities */
+[class*="mask-image"][class*="linear-gradient"],
+[class*="mask-image:linear-gradient"] {
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+}
+
 /* ---------------------------------------------------------------
    Tooltips
    --------------------------------------------------------------- */
