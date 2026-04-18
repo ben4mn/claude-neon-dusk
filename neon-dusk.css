@@ -53,16 +53,20 @@
   --text-500: 260 14% 40%;
 
   /* Accent (brand / primary actions) */
+  --accent-000: 310 100% 55%;   /* was 210° BLUE — overridden to magenta */
   --accent-100: 310 100% 66%;   /* magenta */
   --accent-200: 272 100% 74%;   /* violet */
   --accent-300: 272 100% 82%;
+  --accent-900: 272 100% 88%;   /* was 211° BLUE — overridden to light violet */
   --accent-main-000: 310 100% 66%;
   --accent-main-100: 310 100% 66%;
   --accent-main-200: 272 100% 74%;
   --accent-pro-000: 272 100% 74%;
   --accent-pro-100: 272 100% 74%;
   --accent-pro-200: 310 100% 66%;
-  --accent-secondary-100: 272 100% 74%;  /* violet (was cyan — caused blue input text) */
+  --accent-pro-900: 272 100% 88%;
+  --accent-secondary-100: 272 100% 74%;
+  --accent-brand: 310 100% 66%;
 
   /* Semantic */
   --success-100: 90 90% 62%;    /* lime */
@@ -82,6 +86,79 @@
 
   /* Tailwind ring color — used for focus rings */
   --tw-ring-color: hsl(var(--accent-100) / 0.5);
+}
+
+/* ------------------------------------------------------------
+   Same token overrides applied to every selector Claude might
+   use for dark-mode theming. This beats any class-based
+   redefinition (.theme-dark, [data-theme="dark"], html.dark).
+   Uses !important on custom properties (legal per CSS spec).
+   ------------------------------------------------------------ */
+html, body, html.dark, html.light,
+.theme-dark, .theme-light, .theme,
+[class*="theme-"], [class*="Theme-"],
+[data-theme], [data-theme="dark"], [data-theme="light"],
+[data-mode], [data-appearance],
+html[data-theme="dark"], html[data-theme="light"],
+body[data-theme="dark"], body[data-theme="light"] {
+  --bg-000: 258 28% 8% !important;
+  --bg-100: 258 24% 11% !important;
+  --bg-200: 258 22% 15% !important;
+  --bg-300: 258 20% 19% !important;
+  --bg-400: 258 18% 24% !important;
+  --bg-500: 258 16% 30% !important;
+
+  /* Text — neutral lavender-white. Claude's light-theme defaults
+     are dark values (hue 60°, 7.6% lightness); dark theme needs
+     high-lightness values, otherwise text is black on black. */
+  --text-000: 260 20% 95% !important;
+  --text-100: 260 18% 88% !important;
+  --text-200: 260 15% 75% !important;
+  --text-300: 260 12% 62% !important;
+  --text-400: 260 10% 50% !important;
+  --text-500: 260 8% 40% !important;
+
+  /* Accent — every blue-hued token overridden to magenta/violet */
+  --accent-000: 310 100% 55% !important;
+  --accent-100: 310 100% 66% !important;
+  --accent-200: 272 100% 74% !important;
+  --accent-300: 272 100% 82% !important;
+  --accent-900: 272 100% 88% !important;
+  --accent-main-000: 310 100% 66% !important;
+  --accent-main-100: 310 100% 66% !important;
+  --accent-main-200: 272 100% 74% !important;
+  --accent-pro-000: 272 100% 74% !important;
+  --accent-pro-100: 272 100% 74% !important;
+  --accent-pro-200: 310 100% 66% !important;
+  --accent-pro-900: 272 100% 88% !important;
+  --accent-secondary-100: 272 100% 74% !important;
+  --accent-brand: 310 100% 66% !important;
+
+  /* Borders (Claude defaults to dark-on-light values) */
+  --border-100: 260 30% 22% !important;
+  --border-200: 260 30% 30% !important;
+  --border-300: 260 30% 42% !important;
+  --border-400: 260 30% 50% !important;
+
+  /* Semantic */
+  --success-100: 90 90% 62% !important;
+  --warning-100: 36 100% 65% !important;
+  --danger-000: 352 85% 62% !important;
+  --danger-100: 352 85% 62% !important;
+  --danger-200: 352 85% 62% !important;
+
+  /* Brand / claude-specific tokens */
+  --brand-000: 310 100% 55% !important;
+  --brand-100: 310 100% 66% !important;
+  --brand-200: 272 100% 74% !important;
+  --claude-foreground-color: #ece7f5 !important;
+  --claude-background-color: #14101e !important;
+  --claude-text-100: #ece7f5 !important;
+  --claude-text-200: #c7bde0 !important;
+  --claude-text-400: #a096c2 !important;
+  --claude-text-500: #6b5f8a !important;
+  --claude-border: rgba(180, 125, 255, 0.14) !important;
+  --claude-border-300: rgba(180, 125, 255, 0.14) !important;
 }
 
 /* ------------------------------------------------------------
@@ -569,19 +646,13 @@ button[data-mode][aria-pressed="true"],
 [class*="edge-fade" i],
 [class*="edge-shadow" i],
 [class*="overflow-shadow" i],
-[class*="overflow-fade" i],
-[class*="shadow-top" i],
-[class*="shadow-bottom" i],
-[class*="top-shadow" i],
-[class*="bottom-shadow" i],
-[class*="gradient-top" i],
-[class*="gradient-bottom" i] {
+[class*="overflow-fade" i] {
   box-shadow: none !important;
-  background: transparent !important;
   background-image: none !important;
   -webkit-mask-image: none !important;
   mask-image: none !important;
-  opacity: 0 !important;
+  /* NOTE: removed 'opacity: 0 !important' and 'background: transparent'
+     because those hid legit UI (cowork tray, etc). */
 }
 
 /* Sticky headers often cast a downward box-shadow onto the content
@@ -615,12 +686,26 @@ button[data-mode][aria-pressed="true"],
      4. `scroll-fade` classes
 */
 
-/* Scroll-toggle classes */
+/* Scroll-toggle classes — high-specificity variants that beat
+   any `.theme-dark .has-*-scroll` redefinition Claude may have. */
 .has-top-scroll,
 .has-bottom-scroll,
 .top-shadow,
 .bottom-shadow,
 .scroll-fade,
+html body .has-top-scroll,
+html body .has-bottom-scroll,
+html body .top-shadow,
+html body .bottom-shadow,
+html body .scroll-fade,
+.theme-dark .has-top-scroll,
+.theme-dark .has-bottom-scroll,
+.theme-dark .top-shadow,
+.theme-dark .bottom-shadow,
+[data-theme] .has-top-scroll,
+[data-theme] .has-bottom-scroll,
+[data-theme] .top-shadow,
+[data-theme] .bottom-shadow,
 [class~="has-top-scroll"],
 [class~="has-bottom-scroll"],
 [class~="top-shadow"],
@@ -648,16 +733,12 @@ button[data-mode][aria-pressed="true"],
 
 /* Pseudo-element overlays via Tailwind `after:bg-[radial-gradient(...)]`
    and `before:bg-[linear-gradient(...)]` — these draw a dark tint over
-   the bottom/top of the scroll area. Kill them. */
+   the bottom/top of the scroll area. Kill the background only — DO NOT
+   display:none them, because legitimate UI (cowork badge, some chips)
+   uses pseudo-elements with gradient backgrounds too. */
 [class*="after:bg-[radial-gradient"]::after,
-[class*="after:bg-[linear-gradient"]::after,
-[class*="before:bg-[radial-gradient"]::before,
-[class*="before:bg-[linear-gradient"]::before,
-[class*="after\\:bg-\\[radial-gradient"]::after,
-[class*="before\\:bg-\\[radial-gradient"]::before {
+[class*="before:bg-[radial-gradient"]::before {
   background-image: none !important;
-  background: transparent !important;
-  display: none !important;
 }
 
 /* ---------------------------------------------------------------
@@ -782,4 +863,102 @@ kbd {
 h1, h2, h3 {
   color: var(--nd-ink);
   letter-spacing: 0.015em;
+}
+
+/* ---------------------------------------------------------------
+   Settings / form elements — checkboxes, toggles, selects, sliders
+   --------------------------------------------------------------- */
+
+/* Labels */
+label {
+  color: var(--nd-ink);
+}
+
+/* Checkboxes & radios (not radiogroups) */
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--nd-magenta);
+  background-color: var(--nd-inset) !important;
+  border-color: var(--nd-border-med) !important;
+}
+
+/* Toggle switches — Radix / custom button-based switches */
+[role="switch"] {
+  background-color: var(--nd-inset) !important;
+  border: 1px solid var(--nd-border) !important;
+  transition: background-color 160ms ease;
+}
+[role="switch"][data-state="checked"],
+[role="switch"][aria-checked="true"] {
+  background-color: var(--nd-magenta) !important;
+  border-color: var(--nd-magenta) !important;
+  box-shadow: var(--nd-glow-hot) !important;
+}
+[role="switch"] [class*="thumb" i],
+[role="switch"] [data-part="thumb"],
+[role="switch"]::before {
+  background-color: var(--nd-ink) !important;
+}
+
+/* Select dropdowns */
+select {
+  background-color: var(--nd-inset) !important;
+  color: var(--nd-ink) !important;
+  border: 1px solid var(--nd-border) !important;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+/* Range sliders */
+input[type="range"] {
+  accent-color: var(--nd-magenta);
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  background: var(--nd-inset);
+  border-radius: 2px;
+  height: 4px;
+}
+input[type="range"]::-webkit-slider-thumb {
+  background: var(--nd-magenta);
+  box-shadow: var(--nd-glow-subtle);
+}
+
+/* Settings section headers */
+[class*="settings-section" i] > h2,
+[class*="settings-section" i] > h3,
+[class*="SettingsSection"] > h2,
+[class*="SettingsSection"] > h3,
+[class*="section-title" i],
+[class*="SectionTitle"],
+[class*="section-heading" i] {
+  color: var(--nd-ink-dim) !important;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+
+/* Settings rows / list items */
+[class*="settings-row" i],
+[class*="SettingsRow"],
+[class*="settings-item" i],
+[class*="SettingsItem"],
+[class*="preference-row" i],
+[class*="PreferenceRow"] {
+  border-color: var(--nd-border) !important;
+}
+[class*="settings-row" i]:hover,
+[class*="settings-item" i]:hover,
+[class*="preference-row" i]:hover {
+  background-color: rgba(180, 125, 255, 0.04) !important;
+}
+
+/* Description / hint text under settings controls */
+[class*="settings-description" i],
+[class*="SettingsDescription"],
+[class*="hint" i]:not(button):not([role="button"]),
+[class*="description" i]:not(button):not([role="button"]),
+[class*="helper-text" i] {
+  color: var(--nd-ink-dim) !important;
+  font-size: 0.88em;
 }
